@@ -1,5 +1,6 @@
 # 1. import Flask
 from flask import Flask, render_template, redirect, jsonify
+import os
 # 2. Create an app, being sure to pass __name__
 app = Flask(__name__)
 
@@ -9,7 +10,8 @@ import psycopg2
 from config import username, password
 
 from sqlalchemy import create_engine
-engine = create_engine(f'postgresql://{username}:{password}@localhost:5432/World_power_plant')
+#engine = create_engine(f'postgresql://{username}:{password}@localhost:5432/World_power_plant')
+engine = create_engine(os.environ.get('DATABASE_URL', ''))
 conn = engine.connect()
 connection = psycopg2.connect(user = username,
                                   password = password,
