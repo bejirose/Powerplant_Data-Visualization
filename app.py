@@ -1,5 +1,6 @@
 # 1. import Flask
 from flask import Flask, render_template, redirect, jsonify
+import urllib.parse as urlparse
 import os
 # 2. Create an app, being sure to pass __name__
 app = Flask(__name__)
@@ -7,17 +8,33 @@ app = Flask(__name__)
 
 from sqlalchemy import create_engine
 import psycopg2
+
 from config import username, password
+
+url = urlparse.urlparse(os.environ['DATABASE_URL'])
+dbname = url.path[1:]
+user = url.username
+password = url.password
+host = url.hostname
+port = url.port
+
 
 from sqlalchemy import create_engine
 #engine = create_engine(f'postgresql://{username}:{password}@localhost:5432/World_power_plant')
 engine = create_engine(os.environ.get('DATABASE_URL', ''))
-conn = engine.connect()
-connection = psycopg2.connect(user = username,
-                                  password = password,
-                                  host = "localhost",
-                                  port = "5432",
-                                  database = "World_power_plant")
+#conn = engine.connect()
+# connection = psycopg2.connect(user = username,
+#                                   password = password,
+#                                   host = "localhost",
+#                                   port = "5432",
+#                                   database = "World_power_plant")
+connection = psycopg2.connect(
+            dbname=dbname,
+            user=user,
+            password=password,
+            host=host,
+            port=port
+            )
 cursor = connection.cursor()
 
 top10ussql = 'select "PLANT_NAME", "PLANT_DESIGN_CAPACITY_MWE" from WORLD_PLANT_LIST where "PLANT_COUNTRY" = %s ORDER BY "PLANT_DESIGN_CAPACITY_MWE" DESC NULLS LAST LIMIT 10'
